@@ -1,0 +1,58 @@
+import 'package:flutter/material.dart';
+import 'package:intelligent_plant_esp32/custom/UpdatedDataCard.dart';
+import 'package:intelligent_plant_esp32/utils/custom_functions.dart';
+import 'package:intelligent_plant_esp32/utils/widget_functions.dart';
+
+import '../Objects/Plant.dart';
+
+class UpdatedPlantsCard extends StatefulWidget {
+
+  final Plant plant;
+
+  const UpdatedPlantsCard({super.key, required this.plant});
+
+  @override
+  State<UpdatedPlantsCard> createState() => _UpdatedPlantsCardState();
+}
+
+class _UpdatedPlantsCardState extends State<UpdatedPlantsCard> {
+  @override
+  Widget build(BuildContext context) {
+
+    final ThemeData themeData = Theme.of(context);
+
+    final Size size = MediaQuery.of(context).size;
+
+    return UpdatedDataCard(
+      width: size.width - 20,
+      height: size.width - 20,
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: ClipRRect(
+              child: widget.plant.image ?? Image.asset("assets/images/NoImageIndicator.jpg"),
+              borderRadius: BorderRadius.circular(25.0),
+            )
+          ),
+          addVerticalSpace(10),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(widget.plant.name, style: themeData.textTheme.displayLarge),
+                    addHorizontalSpace(5),
+                    Text(widget.plant.species.name, style: themeData.textTheme.titleMedium),
+                  ],
+                )
+              ],
+            )
+          )
+        ],
+      )
+    );
+  }
+}

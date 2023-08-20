@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1004494078901",
+    "firebase_url": "https://intelligent-plant-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "intelligent-plant",
+    "storage_bucket": "intelligent-plant.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004494078901:android:8554d36d53720a8b328ffc",
+        "android_client_info": {
+          "package_name": "de.dtghgthf.intelligent_plant_esp32"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1004494078901-r4c5ugepdnjoml4g59fti8k89efbbv2m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzmauK_9zydupO6YNik2ImHg1dRqzZYYc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1004494078901-r4c5ugepdnjoml4g59fti8k89efbbv2m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
