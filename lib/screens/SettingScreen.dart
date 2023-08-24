@@ -1,11 +1,15 @@
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intelligent_plant_esp32/custom/BorderBoxButton.dart';
+import 'package:intelligent_plant_esp32/custom/Cards/CardButton.dart';
 import 'package:intelligent_plant_esp32/custom/Cards/SettingsCard.dart';
 import 'package:intelligent_plant_esp32/custom/UpdatedDataCard.dart';
+import 'package:intelligent_plant_esp32/main.dart';
 import 'package:intelligent_plant_esp32/utils/TempData.dart';
+import 'package:intelligent_plant_esp32/utils/auth.dart';
 import 'package:intelligent_plant_esp32/utils/constants.dart';
 import 'package:intelligent_plant_esp32/utils/widget_functions.dart';
 
@@ -19,15 +23,17 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final storageRef = FirebaseStorage.instance.ref();
   FirebaseAuth _auth = FirebaseAuth.instance;
+  AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
 
-    Size screenSize = window.physicalSize;
+    Size screenSize = MediaQuery.of(context).size;
 
-    return Scaffold(
+    return _auth.currentUser != null ? Scaffold(
       body: Stack(
         children: [
           Align(
@@ -37,13 +43,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 addVerticalSpace(50),
                 CircleAvatar(
                   backgroundColor: COLOR_GREY,
+                  backgroundImage: _auth.currentUser!.isAnonymous ? NetworkImage(ANONYMOUS_PHOTO_URL) : _auth.currentUser!.photoURL != null ? NetworkImage(_auth.currentUser!.photoURL!) : null,
                   radius: 100,
                 ),
                 addVerticalSpace(15),
                 Text(
                     _auth.currentUser!.isAnonymous
                         ? "Anonymous"
-                        : _auth.currentUser!.displayName != null
+                        : (_auth.currentUser!.displayName != null && _auth.currentUser!.displayName?.trim() != "")
                             ? _auth.currentUser!.displayName!
                             : _auth.currentUser!.email!,
                     style: themeData.textTheme.headlineMedium),
@@ -69,12 +76,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ],
                       )),
                       addVerticalSpace(15),
-                      SettingsCard(
-                        child: Center(
-                          child: Text("Log Out",
-                            style: screenSize.width < BREAK_SCREEN_SIZE ? TEXT_THEME_SMALL_RED.headlineMedium : TEXT_THEME_DEFAULT_RED.headlineMedium,
-                          )
-                        )
+                      CardButton(
+                        onTap: () async {
+
+                          _auth.currentUser!.isAnonymous ? await _authService.deleteUser(_auth.currentUser!) : null;
+
+                          await _authService.signOut();
+                          setState(() {
+
+                          });
+                        },
+                        child: Text("Log Out",
+                          style: screenSize.width < BREAK_SCREEN_SIZE ? TEXT_THEME_SMALL_RED.headlineMedium : TEXT_THEME_DEFAULT_RED.headlineMedium,
+                        ),
+                      ),
+                      addVerticalSpace(15),
+                      _auth.currentUser!.isAnonymous ? const SizedBox(width: 0, height: 0) : CardButton(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Confirmation'),
+                                content: Text('Are you sure you want to continue?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Continue'),
+                                    onPressed: () async {
+                                      Navigator.pop(context);
+                                      await _authService.deleteUser(_auth.currentUser!);
+                                      await _authService.signOut();
+                                      setState(() {});
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: Text("Delete Account",
+                          style: screenSize.width < BREAK_SCREEN_SIZE ? TEXT_THEME_SMALL_RED.headlineMedium : TEXT_THEME_DEFAULT_RED.headlineMedium,
+                        ),
                       ),
                     ],
                   ),
@@ -96,6 +144,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           )
         ],
       ),
-    );
+    ) : MyApp();
   }
 }
+
+

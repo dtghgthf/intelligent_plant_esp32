@@ -8,9 +8,10 @@ import 'package:intelligent_plant_esp32/screens/Wrapper.dart';
 import 'package:intelligent_plant_esp32/utils/TempData.dart';
 import 'package:intelligent_plant_esp32/utils/auth.dart';
 import 'package:intelligent_plant_esp32/utils/constants.dart';
-import 'package:provider/provider.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -24,7 +25,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    Size screenSize = window.physicalSize;
+    Size screenSize = MediaQuery.of(context).size;
     final ThemeData themeData = Theme.of(context);
 
     Widget home = MaterialApp(
@@ -37,14 +38,19 @@ class _MyAppState extends State<MyApp> {
                 ? const ColorScheme.dark()
                 : ColorScheme.fromSwatch()
                     .copyWith(secondary: COLOR_DARK_BLUE)),
-        home: FutureBuilder(
+        home: Wrapper(updateTheme: () {
+          setState(() {});
+        })
+        /*FutureBuilder(
           // Initialize FlutterFire
           future: Firebase.initializeApp(),
           builder: (context, snapshot) {
             // Check for errors
             if (snapshot.hasError) {
-              return Text("SOMETHING WENT WRONG",
-                  style: themeData.textTheme.headlineLarge);
+              return Center(
+                child: Text("SOMETHING WENT WRONG",
+                    style: themeData.textTheme.headlineLarge),
+              );
             }
 
             // Once complete, show your application
@@ -57,7 +63,7 @@ class _MyAppState extends State<MyApp> {
             // Otherwise, show something whilst waiting for initialization to complete
             return Center(child: CircularProgressIndicator());
           },
-        ) // LandingScreen(updateTheme: () { setState(() {}); }),
+        )*/ // LandingScreen(updateTheme: () { setState(() {}); }),
         );
 
     return SAFEAREA_ACTIVE ? SafeArea(child: home) : home;

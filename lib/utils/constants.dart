@@ -9,6 +9,8 @@ const COLOR_DARK_BLUE = Color.fromRGBO(20, 25, 45, 1.0);
 
 const BREAK_SCREEN_SIZE = 1080;
 
+const String ANONYMOUS_PHOTO_URL = "https://firebasestorage.googleapis.com/v0/b/intelligent-plant.appspot.com/o/profilepictures%2FAnonymous.jpg?alt=media&token=c2ac8078-1128-4be5-9a93-1ad317b11a4d";
+
 const TextTheme TEXT_THEME_DEFAULT = TextTheme(
     displayLarge: TextStyle(
         color: COLOR_BLACK, fontWeight: FontWeight.w700, fontSize: 26),

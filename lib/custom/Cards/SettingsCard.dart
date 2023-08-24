@@ -22,11 +22,11 @@ class _SettingsCardState extends State<SettingsCard> {
 
     final ThemeData themeData = Theme.of(context);
 
-    Size screenSize = window.physicalSize;
+    Size screenSize = MediaQuery.of(context).size;
 
     return UpdatedDataCard(
-        width: screenSize.width,
-        height: 50,
+        width: screenSize.width - (screenSize.width / 2),
+        height: 60,
         child: widget.child
     );
   }

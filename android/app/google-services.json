@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "1004494078901-r4c5ugepdnjoml4g59fti8k89efbbv2m.apps.googleusercontent.com",
+          "client_id": "1004494078901-djdb1dflb2datkupbtqeuju3pc0d4fbu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.dtghgthf.intelligent_plant_esp32",
+            "certificate_hash": "7d4bba6aa4a77241082e4506741c00bc82684faa"
+          }
+        },
+        {
+          "client_id": "1004494078901-hh3mv1jcv42i9glntgieh18je9gn6kue.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -28,8 +36,15 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1004494078901-r4c5ugepdnjoml4g59fti8k89efbbv2m.apps.googleusercontent.com",
+              "client_id": "1004494078901-bsh32uon8o4sf9ep0e1dsojhk91ljlrr.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1004494078901-noruuoe2ok4ud4ounkb816n8t69hnper.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.dtghgthf.intelligentPlantEsp32"
+              }
             }
           ]
         }

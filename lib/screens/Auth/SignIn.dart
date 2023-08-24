@@ -1,54 +1,96 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intelligent_plant_esp32/main.dart';
-import 'package:intelligent_plant_esp32/screens/Wrapper.dart';
+import 'package:intelligent_plant_esp32/custom/Cards/CardButton.dart';
+import 'package:intelligent_plant_esp32/custom/CustomTextField.dart';
+import 'package:intelligent_plant_esp32/screens/Auth/SignUp.dart';
 import 'package:intelligent_plant_esp32/utils/auth.dart';
+import 'package:intelligent_plant_esp32/utils/widget_functions.dart';
 
-class SignIn extends StatefulWidget {
-  const SignIn({super.key});
+TextEditingController _emailController = TextEditingController();
+TextEditingController _passwordController = TextEditingController();
 
-  @override
-  State<SignIn> createState() => _SignInState();
-}
+class SignIn extends StatelessWidget {
+  SignIn({super.key});
 
-class _SignInState extends State<SignIn> {
-
-  final AuthService _auth = AuthService();
+  AuthService _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
+    Size screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
-      body: Container(
-        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-        child: Center(
-          child: Column(
-            children: [
-              ElevatedButton(
-                child: Text("Sign in Anonymous"),
-                onPressed: () async {
-                  dynamic result = await _auth.signInAnonymous();
-                  if (result != null) {
-                    print("Signed in: $result}");
-                  } else {
-                    print("Error Signing In");
-                  }
-                },
+      resizeToAvoidBottomInset: false,
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: Column(
+          children: [
+            addVerticalSpace(15),
+            Text("Sign In", style: themeData.textTheme.displayLarge),
+            addVerticalSpace(50),
+            CustomTextField(
+              text: "Email",
+              keyboardType: TextInputType.emailAddress,
+              controller: _emailController,
+            ),
+            addVerticalSpace(15),
+            CustomTextField(
+              text: "Password",
+              keyboardType: TextInputType.visiblePassword,
+              controller: _passwordController,
+            ),
+            addVerticalSpace(25),
+            CardButton(
+              onTap: () {
+                _auth.signInWithEmailAndPassword(_emailController.text, _passwordController.text);
+              },
+              child: Text("Let's Go", style: themeData.textTheme.displayMedium),
+            ),
+            addVerticalSpace(5),
+            TextButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp()));
+              },
+              child: Text("No Account yet? Sign Up here!", style: themeData.textTheme.bodyMedium,),
+            ),
+            addVerticalSpace(15),
+            Divider(
+              thickness: 4,
+              indent: 15,
+              endIndent: 15,
+            ),
+            addVerticalSpace(25),
+            CardButton(
+              width: screenSize.width - (screenSize.width / 3),
+              onTap: () {
+                _auth.signInWithGoogle();
+              },
+              child: Row(
+                children: [
+                  addHorizontalSpace(10),
+                  Text("G", style: themeData.textTheme.displayLarge),
+                  addHorizontalSpace(15),
+                  Text("Sign In with Google", style: themeData.textTheme.labelLarge,)
+                ],
               ),
-              ElevatedButton(
-                child: Text("Sign in With Email and Password"),
-                onPressed: () async {
-                  dynamic result = await _auth.signInWithEmailAndPassword("erik.echterhoff@gmail.com", "test123");
-                  if (result != null) {
-                    print("Signed in: $result}");
-                  } else {
-                    print("Error Signing In");
-                  }
-                },
+            ),
+            addVerticalSpace(15),
+            CardButton(
+              width: screenSize.width - (screenSize.width / 3),
+              onTap: () {
+                _auth.signInAnonymously();
+              },
+              child: Row(
+                children: [
+                  addHorizontalSpace(10),
+                  Icon(Icons.person),
+                  addHorizontalSpace(10),
+                  Text("Sign In Anonymously", style: themeData.textTheme.labelLarge,)
+                ],
               ),
-            ],
-          ),
+            )
+          ],
         )
-      ),
+      )
     );
   }
 }

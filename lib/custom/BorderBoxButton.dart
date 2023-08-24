@@ -6,14 +6,15 @@ class BorderBoxButton extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
   final double width, height;
+  final Decoration? decoration;
   final VoidCallback? onTap;
 
-  const BorderBoxButton({super.key, this.padding = const EdgeInsets.all(8.0), required this.width, required this.height, required this.child, this.onTap});
+  const BorderBoxButton({super.key, this.padding = const EdgeInsets.all(8.0), required this.width, required this.height, required this.child, this.onTap, this.decoration});
 
   @override
   Widget build(BuildContext context) {
     return Ink(
-      decoration: BoxDecoration(
+      decoration: decoration ?? BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.grey.withAlpha(40), width: 2),
       ),

@@ -7,11 +7,24 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Stream<User?> get user {
-    return _auth.authStateChanges();
+  Future createUser(String email, String password, String name, NetworkImage picture) async {
+    try {
+      UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      User user = result.user!;
+
+      user.updateDisplayName(name);
+      user.updatePhotoURL(picture.url);
+
+      userStreamController.add(user);
+
+      return user;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
   }
 
-  Future signInAnonymous() async {
+  Future signInAnonymously() async {
     try {
       UserCredential result = await _auth.signInAnonymously();
       User? user = result.user;
@@ -42,6 +55,23 @@ class AuthService {
     }
   }
 
+  Future signInWithGoogle() async {
+
+    GoogleAuthProvider _authProvider = GoogleAuthProvider();
+
+    try {
+      UserCredential result = await _auth.signInWithProvider(_authProvider);
+      User? user = result.user;
+
+      userStreamController.add(user);
+
+      return user;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
   Future signOut() async {
     try {
       await _auth.signOut();
@@ -51,6 +81,17 @@ class AuthService {
       return true;
     } catch (e) {
       print("ERROR WHILE SIGNING OUT: ${e.toString()}");
+      return false;
+    }
+  }
+
+  Future deleteUser(User user) async {
+    try {
+      user.delete();
+
+      return true;
+    } catch (e) {
+      print(e.toString());
       return false;
     }
   }
