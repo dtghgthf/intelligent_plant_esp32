@@ -9,8 +9,9 @@ import '../UpdatedDataCard.dart';
 class SettingsCard extends StatefulWidget {
 
   final Widget child;
+  final double? width, height;
 
-  const SettingsCard({super.key, required this.child});
+  const SettingsCard({super.key, required this.child, this.width, this.height});
 
   @override
   State<SettingsCard> createState() => _SettingsCardState();
@@ -25,8 +26,8 @@ class _SettingsCardState extends State<SettingsCard> {
     Size screenSize = MediaQuery.of(context).size;
 
     return UpdatedDataCard(
-        width: screenSize.width - (screenSize.width / 2),
-        height: 60,
+        width: widget.width ?? screenSize.width - (screenSize.width / 2),
+        height: widget.height ?? 60,
         child: widget.child
     );
   }

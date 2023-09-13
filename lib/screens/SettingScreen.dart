@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ class SettingsScreen extends StatefulWidget {
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final storageRef = FirebaseStorage.instance.ref();
@@ -71,8 +74,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             onChanged: (active) {
                               DARKMODE_ACTIVE = active;
                               widget.updateTheme();
-                            },
-                          )
+                            }
+                          ),
                         ],
                       )),
                       addVerticalSpace(15),
@@ -148,4 +151,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+Future<bool> isDarkmodeActiveForCurrentUser() async {
+  DocumentReference userDoc = FirebaseFirestore.instance.doc('Users/${_auth.currentUser!.uid}');
 
+  DocumentSnapshot _data = await userDoc.get();
+
+  print("darkmode is set to: ${_data["settings"]}");
+
+  return _data["settings"]["darkmodeActive"];
+}
+
+void setDarkMode(bool active) {
+  DocumentReference userDoc = FirebaseFirestore.instance.doc('Users/${_auth.currentUser!.uid}');
+
+  print("set darkmode to: $active");
+
+  userDoc.update({
+    "settings": {
+      "darkmodeActive": false
+    }
+  });
+}

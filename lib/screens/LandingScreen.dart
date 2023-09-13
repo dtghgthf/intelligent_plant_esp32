@@ -1,13 +1,17 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:intelligent_plant_esp32/custom/BorderBox.dart';
 import 'package:intelligent_plant_esp32/custom/BorderBoxButton.dart';
+import 'package:intelligent_plant_esp32/custom/Cards/AddPlantCard.dart';
 import 'package:intelligent_plant_esp32/custom/Cards/UpdatedPlantsCard.dart';
+import 'package:intelligent_plant_esp32/screens/AddPlantScreen.dart';
 import 'package:intelligent_plant_esp32/screens/SettingScreen.dart';
-import 'package:intelligent_plant_esp32/utils/TempData.dart';
 import 'package:intelligent_plant_esp32/utils/constants.dart';
+import 'package:intelligent_plant_esp32/utils/plant_functions.dart';
 
+import '../custom/Objects/Plant.dart';
+import '../utils/TempData.dart';
 import '../utils/widget_functions.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -21,11 +25,15 @@ class LandingScreen extends StatefulWidget {
 
 late TabController tabController;
 final List<Widget> tabs = [
-  /*TabOverlay(width: 150, height: 50, text: "Home"),
-  TabOverlay(width: 150, height: 50, text: "Tab 2"),*/
-
   Tab(text: "Home", icon: Icon(Icons.home)),
-  Tab(text: "Settings", icon: Icon(Icons.settings)),
+  Tab(text: "Coming Soon", icon: Icon(Icons.upcoming)),
+];
+
+ScrollController _plantsScrollController = ScrollController();
+
+StreamController<Plant> plantStreamController = StreamController<Plant>.broadcast();
+List<Plant> Plants = [
+  Plant(name: "name", id: "id", species: PLANT_SPECIES.Cactus, imageURL: "", data: {})
 ];
 
 class _LandingScreenState extends State<LandingScreen> with SingleTickerProviderStateMixin {
@@ -34,6 +42,7 @@ class _LandingScreenState extends State<LandingScreen> with SingleTickerProvider
   void initState() {
     super.initState();
     tabController = TabController(length: tabs.length, vsync: this);
+    //_plantsScrollController.animateTo(0, duration: const Duration(microseconds: 5), curve: Curves.bounceInOut);
   }
 
   @override
@@ -54,12 +63,7 @@ class _LandingScreenState extends State<LandingScreen> with SingleTickerProvider
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("Hello, your plants are doing Great!", style: themeData.textTheme.headlineMedium),
-                    BorderBoxButton(width: 50, height: 50, child: Icon(Icons.settings), onTap: () {
-                      /*setState(() {
-                        DARKMODE_ACTIVE = !DARKMODE_ACTIVE;
-                      });
-                      widget.updateTheme();*/
-
+                    BorderBoxButton(width: 50, height: 50, child: Icon(Icons.settings), onTap: () async {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(updateTheme: widget.updateTheme)));
                     })
                   ],
@@ -71,32 +75,56 @@ class _LandingScreenState extends State<LandingScreen> with SingleTickerProvider
                 child: TabBarView(
                   controller: tabController,
                   children: [
-                    ListView.builder(
-                      itemCount: Plants.length,
-                      physics: BouncingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            addVerticalSpace(padding / 2),
-                            UpdatedPlantsCard(plant: Plants[index]),
-                            addVerticalSpace(padding)
-                          ],
-                        );
+                    // Tab 1
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        setState(() {});
                       },
+                      child: FutureBuilder(
+                        future: getPlantsListFuture(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Text("ERROR: ${snapshot.error}");
+                          } else if (snapshot.hasData) {
+                            Plants = snapshot.data!;
+
+                            return ListView.builder(
+                              controller: _plantsScrollController,
+                              itemCount: Plants.length + 1,
+                              physics: BouncingScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return index == Plants.length
+                                ? Column(
+                                    children: [
+                                      addVerticalSpace(padding / 2),
+                                      AddPlantCard(onTab: () {
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => AddPlantScreen(updatePage: () {
+                                          setState(() {});
+                                        })));
+                                      }),
+                                      addVerticalSpace(padding)
+                                    ],
+                                )
+                                : Column(
+                                  children: [
+                                    addVerticalSpace(padding / 2),
+                                    UpdatedPlantsCard(plant: Plants[index]),
+                                    addVerticalSpace(padding)
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            return Text(snapshot.data.toString());
+                          }
+                        },
+                      ),
                     ),
-                    ListView.builder(
-                      itemCount: Plants.length,
-                      physics: BouncingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            addVerticalSpace(padding / 2),
-                            UpdatedPlantsCard(plant: Plants[index]),
-                            addVerticalSpace(padding)
-                          ],
-                        );
-                      },
-                    ),
+
+                    // Tab 2
+                    Center(child: Text("Coming Soon!", style: themeData.textTheme.displayLarge,))
                   ],
                 ),
               ),

@@ -12,9 +12,10 @@ class CardButton extends StatefulWidget {
 
   final Widget child;
   final VoidCallback onTap;
-  final double? width;
+  final double? width, height;
+  final EdgeInsets? padding;
 
-  const CardButton({super.key, required this.child, required this.onTap, this.width});
+  const CardButton({super.key, required this.child, required this.onTap, this.width, this.height, this.padding});
 
   @override
   State<CardButton> createState() => _CardButtonState();
@@ -30,7 +31,8 @@ class _CardButtonState extends State<CardButton> {
 
     return BorderBoxButton(
       width: widget.width ?? screenSize.width - (screenSize.width / 2),
-      height: 50,
+      height: widget.height ?? 50,
+      padding: widget.padding ?? EdgeInsets.zero,
       decoration: BoxDecoration(
         color: DARKMODE_ACTIVE ? COLOR_GREY.withAlpha(40) : COLOR_WHITE,
         borderRadius: BorderRadius.circular(15),

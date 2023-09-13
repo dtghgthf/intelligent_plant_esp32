@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intelligent_plant_esp32/screens/Auth/SignIn.dart';
 import 'package:intelligent_plant_esp32/screens/LandingScreen.dart';
-import 'package:provider/provider.dart';
 
 StreamController<User?> userStreamController = StreamController<User?>.broadcast();
 

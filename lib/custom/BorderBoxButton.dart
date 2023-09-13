@@ -14,15 +14,16 @@ class BorderBoxButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Ink(
-      decoration: decoration ?? BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.withAlpha(40), width: 2),
-      ),
       child: InkWell(
         onTap: onTap,
         child: Container(
           width: width,
           height: height,
+          padding: padding,
+          decoration: decoration ?? BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.grey.withAlpha(40), width: 2),
+          ),
           child: Center(
             child: child,
           ),

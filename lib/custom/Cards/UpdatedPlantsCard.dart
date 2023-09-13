@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intelligent_plant_esp32/custom/Cards/CardButton.dart';
 import 'package:intelligent_plant_esp32/custom/UpdatedDataCard.dart';
+import 'package:intelligent_plant_esp32/screens/PlantOptionsPage.dart';
 import 'package:intelligent_plant_esp32/utils/custom_functions.dart';
 import 'package:intelligent_plant_esp32/utils/widget_functions.dart';
 
@@ -23,16 +25,17 @@ class _UpdatedPlantsCardState extends State<UpdatedPlantsCard> {
 
     final Size size = MediaQuery.of(context).size;
 
-    return UpdatedDataCard(
+    return CardButton(
       width: size.width - 20,
       height: size.width - 20,
       padding: const EdgeInsets.all(10.0),
+      onTap: () { Navigator.push(context, MaterialPageRoute(builder: (context) => PlantOptionsPage(plant: widget.plant))); },
       child: Column(
         children: [
           Align(
             alignment: Alignment.topCenter,
             child: ClipRRect(
-              child: widget.plant.image ?? Image.asset("assets/images/NoImageIndicator.jpg"),
+              child: Image.asset("assets/images/NoImageIndicator.jpg"),
               borderRadius: BorderRadius.circular(25.0),
             )
           ),

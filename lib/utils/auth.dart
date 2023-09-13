@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,8 @@ class AuthService {
 
       user.updateDisplayName(name);
       user.updatePhotoURL(picture.url);
+
+      firebaseSetup(user);
 
       userStreamController.add(user);
 
@@ -63,6 +66,15 @@ class AuthService {
       UserCredential result = await _auth.signInWithProvider(_authProvider);
       User? user = result.user;
 
+      UserMetadata _metadata = user!.metadata;
+      if (_metadata.creationTime == _metadata.lastSignInTime) {
+        String _name = user.email!.split("@")[0];
+        user.updateDisplayName(_name);
+        user.updatePhotoURL("https://firebasestorage.googleapis.com/v0/b/intelligent-plant.appspot.com/o/profilepictures%2FPP_0.png?alt=media&token=26c030d7-cdca-4553-b0a0-c4c22d528a9c");
+
+        firebaseSetup(user);
+      }
+
       userStreamController.add(user);
 
       return user;
@@ -94,5 +106,15 @@ class AuthService {
       print(e.toString());
       return false;
     }
+  }
+
+  Future firebaseSetup(User user) async {
+    DocumentReference userDoc = FirebaseFirestore.instance.doc('Users/${user.uid}');
+
+    await userDoc.set({
+      "settings": {
+        "darkmodeActive": false
+      }
+    });
   }
 }
