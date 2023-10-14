@@ -82,9 +82,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       CardButton(
                         onTap: () async {
 
-                          _auth.currentUser!.isAnonymous ? await _authService.deleteUser(_auth.currentUser!) : null;
+                          _auth.currentUser!.isAnonymous ? await _authService.deleteUser(context, _auth.currentUser!) : null;
 
-                          await _authService.signOut();
+                          await _authService.signOut(context);
                           setState(() {
 
                           });
@@ -113,8 +113,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     child: Text('Continue'),
                                     onPressed: () async {
                                       Navigator.pop(context);
-                                      await _authService.deleteUser(_auth.currentUser!);
-                                      await _authService.signOut();
+                                      await _authService.deleteUser(context, _auth.currentUser!);
+                                      await _authService.signOut(context);
                                       setState(() {});
                                     },
                                   ),

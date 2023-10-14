@@ -87,9 +87,9 @@ class _SignUpState extends State<SignUp> {
                         ),
                         addVerticalSpace(25),
                         CardButton(
-                          onTap: () {
-                            _auth.createUser(_emailController.text, _passwordController.text, _nameController.text, profilePictures[activePictureIndex]);
-                            _auth.signInWithEmailAndPassword(_emailController.text, _passwordController.text);
+                          onTap: () async {
+                            await _auth.createUser(context, _emailController.text, _passwordController.text, _nameController.text, profilePictures[activePictureIndex]);
+                            await _auth.signInWithEmailAndPassword(context, _emailController.text, _passwordController.text);
                             Navigator.pop(context);
                             setState(() {
 

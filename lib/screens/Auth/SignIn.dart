@@ -8,10 +8,23 @@ import 'package:intelligent_plant_esp32/utils/widget_functions.dart';
 TextEditingController _emailController = TextEditingController();
 TextEditingController _passwordController = TextEditingController();
 
-class SignIn extends StatelessWidget {
+class SignIn extends StatefulWidget {
   SignIn({super.key});
 
+  @override
+  State<SignIn> createState() => _SignInState();
+}
+
+class _SignInState extends State<SignIn> {
   AuthService _auth = AuthService();
+
+  @override
+  void initState() {
+    _emailController.clear();
+    _passwordController.clear();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +54,7 @@ class SignIn extends StatelessWidget {
             addVerticalSpace(25),
             CardButton(
               onTap: () {
-                _auth.signInWithEmailAndPassword(_emailController.text, _passwordController.text);
+                _auth.signInWithEmailAndPassword(context, _emailController.text, _passwordController.text);
               },
               child: Text("Let's Go", style: themeData.textTheme.displayMedium),
             ),
@@ -62,7 +75,7 @@ class SignIn extends StatelessWidget {
             CardButton(
               width: screenSize.width - (screenSize.width / 3),
               onTap: () {
-                _auth.signInWithGoogle();
+                _auth.signInWithGoogle(context);
               },
               child: Row(
                 children: [
@@ -77,7 +90,7 @@ class SignIn extends StatelessWidget {
             CardButton(
               width: screenSize.width - (screenSize.width / 3),
               onTap: () {
-                _auth.signInAnonymously();
+                _auth.signInAnonymously(context);
               },
               child: Row(
                 children: [

@@ -8,7 +8,7 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future createUser(String email, String password, String name, NetworkImage picture) async {
+  Future createUser(BuildContext context, String email, String password, String name, NetworkImage picture) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       User user = result.user!;
@@ -23,11 +23,12 @@ class AuthService {
       return user;
     } catch (e) {
       print(e.toString());
+      showErrorSnackbar(context, e);
       return null;
     }
   }
 
-  Future signInAnonymously() async {
+  Future signInAnonymously(BuildContext context) async {
     try {
       UserCredential result = await _auth.signInAnonymously();
       User? user = result.user;
@@ -37,11 +38,12 @@ class AuthService {
       return user;
     } catch (e) {
       print(e.toString());
+      showErrorSnackbar(context, e);
       return null;
     }
   }
 
-  Future signInWithEmailAndPassword(String email, password) async {
+  Future signInWithEmailAndPassword(BuildContext context, String email, password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email,
@@ -54,11 +56,12 @@ class AuthService {
       return user;
     } catch (e) {
       print(e.toString());
+      showErrorSnackbar(context, e);
       return null;
     }
   }
 
-  Future signInWithGoogle() async {
+  Future signInWithGoogle(BuildContext context) async {
 
     GoogleAuthProvider _authProvider = GoogleAuthProvider();
 
@@ -80,11 +83,12 @@ class AuthService {
       return user;
     } catch (e) {
       print(e.toString());
+      showErrorSnackbar(context, e);
       return null;
     }
   }
 
-  Future signOut() async {
+  Future signOut(BuildContext context) async {
     try {
       await _auth.signOut();
 
@@ -93,17 +97,22 @@ class AuthService {
       return true;
     } catch (e) {
       print("ERROR WHILE SIGNING OUT: ${e.toString()}");
+      showErrorSnackbar(context, e);
       return false;
     }
   }
 
-  Future deleteUser(User user) async {
+  Future deleteUser(BuildContext context, User user) async {
     try {
-      user.delete();
+      DocumentReference userDoc = FirebaseFirestore.instance.doc('Users/${user.uid}');
+      await userDoc.delete();
+
+      await user.delete();
 
       return true;
     } catch (e) {
       print(e.toString());
+      showErrorSnackbar(context, e);
       return false;
     }
   }
@@ -112,9 +121,16 @@ class AuthService {
     DocumentReference userDoc = FirebaseFirestore.instance.doc('Users/${user.uid}');
 
     await userDoc.set({
-      "settings": {
+      "plantSpecies": []
+      ,"settings": {
         "darkmodeActive": false
       }
     });
   }
+}
+
+void showErrorSnackbar(BuildContext context, Object e) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(e.toString().split("] ")[1]),
+  ));
 }
