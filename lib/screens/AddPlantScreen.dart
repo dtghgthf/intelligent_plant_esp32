@@ -23,7 +23,9 @@ class AddPlantScreen extends StatefulWidget {
 
 TextEditingController _nameController = TextEditingController();
 
-PLANT_SPECIES _selectedSpecies = PLANT_SPECIES.Unknown;
+List<String> species = ["Unknown"];
+
+String _selectedSpecies = "Unknown";
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -62,39 +64,53 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("Species", style: themeData.textTheme.labelLarge),
-                      DropdownButton<PLANT_SPECIES>(
-                        value: _selectedSpecies,
-                        onChanged: (newValue) {
-                          setState(() {
-                            _selectedSpecies = newValue!;
-                          });
+                      FutureBuilder(
+                        future: getSpecies(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.done) {
+
+                            return DropdownButton<String>(
+                              value: _selectedSpecies,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _selectedSpecies = newValue!;
+                                });
+                              },
+                              items: snapshot.data!.map((String species) {
+                                return DropdownMenuItem<String>(
+                                  value: species,
+                                  child: Text(species, style: themeData.textTheme.bodyLarge),
+                                );
+                              }).toList() + [ //TODO: Add these functions in Species Dropdown
+                                DropdownMenuItem(
+                                  child: Text("ADD PLANT", style: themeData.textTheme.bodyLarge),
+                                  onTap: () {
+
+                                  },
+                                ),
+                                DropdownMenuItem(
+                                  child: Text("DELETE LAST", style: TEXT_THEME_DEFAULT_RED.bodyLarge),
+                                  onTap: () {
+
+                                  },
+                                ),
+                                DropdownMenuItem(
+                                  child: Text("DELETE ALL", style: TEXT_THEME_DEFAULT_RED.bodyLarge),
+                                  onTap: () {
+
+                                  },
+                                ),
+                              ],
+                            );
+                          } else if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Text("ERROR: ${snapshot.error}");
+                          } else {
+                            return Text("${snapshot.data}");
+                          }
                         },
-                        items: PLANT_SPECIES.values.map((PLANT_SPECIES species) {
-                          return DropdownMenuItem<PLANT_SPECIES>(
-                            value: species,
-                            child: Text(species.name, style: themeData.textTheme.bodyLarge),
-                          );
-                        }).toList() + [ //TODO: Add these functions in Species Dropdown
-                          DropdownMenuItem(
-                            child: Text("ADD PLANT", style: themeData.textTheme.bodyLarge),
-                            onTap: () {
-
-                            },
-                          ),
-                          DropdownMenuItem(
-                            child: Text("DELETE LAST", style: TEXT_THEME_DEFAULT_RED.bodyLarge),
-                            onTap: () {
-
-                            },
-                          ),
-                          DropdownMenuItem(
-                            child: Text("DELETE ALL", style: TEXT_THEME_DEFAULT_RED.bodyLarge),
-                            onTap: () {
-
-                            },
-                          ),
-                        ],
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -139,7 +155,7 @@ Future addPlant() async {
   plantsCollection.doc("plant_${plantsCount}").set({
     "Id": id,
     "Name": _nameController.text,
-    "Species": _selectedSpecies.name,
+    "Species": _selectedSpecies,
     "ImageURL": "", // TODO: Add Image URL to plant
     "data": {
       "Water": {
@@ -158,4 +174,21 @@ Future addPlant() async {
       }
     }
   });
+}
+
+Future<List<String>> getSpecies() async {
+  List<String> output = [];
+  DocumentReference userDoc = FirebaseFirestore.instance.doc('Users/${_auth.currentUser!.uid}');
+
+  DocumentSnapshot data = await userDoc.get();
+
+  output = List<String>.from(data["plantSpecies"]);
+
+  print("---------------- ${output} -------------------");
+
+  return output;
+}
+
+Future addSpecies(String name) async {
+
 }

@@ -41,7 +41,7 @@ class _PlantOptionsPageState extends State<PlantOptionsPage> {
                 addVerticalSpace(15),
                 Text(widget.plant.name, style: themeData.textTheme.displayLarge),
                 addVerticalSpace(10),
-                Text(widget.plant.species.name, style: themeData.textTheme.titleMedium),
+                Text(widget.plant.species, style: themeData.textTheme.titleMedium),
                 addVerticalSpace(50),
                 StreamBuilder(
                   stream: _plantsCollection.snapshots(),

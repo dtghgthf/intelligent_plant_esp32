@@ -4,7 +4,7 @@ import 'package:intelligent_plant_esp32/utils/constants.dart';
 class Plant {
   final String id;
   final String name;
-  final PLANT_SPECIES species;
+  final String species;
   final String imageURL;
   final Map<String, dynamic> data;/* = {
     "Water": {
@@ -29,7 +29,7 @@ class Plant {
     return {
       "Id": id,
       "Name": name,
-      "Species": species.name,
+      "Species": species,
       "ImageURL": imageURL,
       "data": data
     };
@@ -37,6 +37,6 @@ class Plant {
 
   @override
   String toString() {
-    return '{"id": $id, "name": $name, "species": ${species.name}, "imageURL": $imageURL, "data": $data}';
+    return '{"id": $id, "name": $name, "species": ${species}, "imageURL": $imageURL, "data": $data}';
   }
 }

@@ -48,7 +48,7 @@ class _UpdatedPlantsCardState extends State<UpdatedPlantsCard> {
                   children: [
                     Text(widget.plant.name, style: themeData.textTheme.displayLarge),
                     addHorizontalSpace(5),
-                    Text(widget.plant.species.name, style: themeData.textTheme.titleMedium),
+                    Text(widget.plant.species, style: themeData.textTheme.titleMedium),
                   ],
                 )
               ],

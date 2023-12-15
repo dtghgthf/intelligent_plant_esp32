@@ -33,7 +33,7 @@ ScrollController _plantsScrollController = ScrollController();
 
 StreamController<Plant> plantStreamController = StreamController<Plant>.broadcast();
 List<Plant> Plants = [
-  Plant(name: "name", id: "id", species: PLANT_SPECIES.Cactus, imageURL: "", data: {})
+  Plant(name: "name", id: "id", species: "Unknown", imageURL: "", data: {})
 ];
 
 class _LandingScreenState extends State<LandingScreen> with SingleTickerProviderStateMixin {

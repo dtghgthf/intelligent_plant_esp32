@@ -9,6 +9,7 @@ import 'package:intelligent_plant_esp32/custom/Cards/CardButton.dart';
 import 'package:intelligent_plant_esp32/custom/Cards/SettingsCard.dart';
 import 'package:intelligent_plant_esp32/custom/UpdatedDataCard.dart';
 import 'package:intelligent_plant_esp32/main.dart';
+import 'package:intelligent_plant_esp32/screens/ChangeSpeciesScreen.dart';
 import 'package:intelligent_plant_esp32/utils/TempData.dart';
 import 'package:intelligent_plant_esp32/utils/auth.dart';
 import 'package:intelligent_plant_esp32/utils/constants.dart';
@@ -78,6 +79,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ],
                       )),
+                      addVerticalSpace(15),
+                      CardButton(
+                        child: Text("Change your Species", style: themeData.textTheme.headlineMedium),
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ChangeSpeciesScreen()));
+                        },
+                      ),
                       addVerticalSpace(15),
                       CardButton(
                         onTap: () async {
@@ -171,4 +179,12 @@ void setDarkMode(bool active) {
       "darkmodeActive": false
     }
   });
+}
+
+Future deleteSpecies(String species) async {
+  DocumentReference userDoc = FirebaseFirestore.instance.doc('Users/${_auth.currentUser!.uid}');
+
+  print(await userDoc.get());
+
+  userDoc.update({"plantSpecies/${species}": FieldValue.delete()});
 }

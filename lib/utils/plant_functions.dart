@@ -25,7 +25,7 @@ Future<List<Plant>> getPlantsListFuture() async {
   for (int i = 0; i < plantsCount; i++) {
     DocumentSnapshot data = await plantsCollection.doc("plant_$i").get();
 
-    Plant _plant = Plant(name: data["Name"] ?? "", id: data["Id"] ?? "", species: PLANT_SPECIES.values.byName(data["Species"]), imageURL: data["ImageURL"] ?? "assets/images/NoImageIndicator.jpg", data: data["data"] ?? "");
+    Plant _plant = Plant(name: data["Name"] ?? "", id: data["Id"] ?? "", species: data["Species"], imageURL: data["ImageURL"] ?? "assets/images/NoImageIndicator.jpg", data: data["data"] ?? "");
 
     plants.add(_plant);
   }

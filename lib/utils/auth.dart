@@ -121,7 +121,9 @@ class AuthService {
     DocumentReference userDoc = FirebaseFirestore.instance.doc('Users/${user.uid}');
 
     await userDoc.set({
-      "plantSpecies": []
+      "plantSpecies": [
+        "Unknown"
+      ]
       ,"settings": {
         "darkmodeActive": false
       }
