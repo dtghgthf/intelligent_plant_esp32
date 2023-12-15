@@ -61,7 +61,8 @@ class _ChangeSpeciesScreenState extends State<ChangeSpeciesScreen> {
                                             TextButton(
                                               child: Text("OKAY"),
                                               onPressed: () {
-                                                Navigator.pop(context);
+                                                Navigator.pop(context); //TODO: add delete Species
+                                                deleteSpecies(snapshot.data![index]);
                                               },
                                             ),
                                           ],
@@ -127,5 +128,11 @@ Future<List<String>> getSpecies() async {
 }
 
 Future addSpecies(String name) async {
+
+}
+
+Future deleteSpecies(String name) async {
+  List<String> species = await getSpecies();
+
 
 }
