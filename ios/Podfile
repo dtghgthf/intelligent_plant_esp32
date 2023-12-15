@@ -7,4 +7,10 @@ target 'Runner' do
 
   # Pods for Runner
 
+  pod 'FirebaseFirestore'
+  pod 'firebase_core'
+  pod 'firebase_auth'
+  pod 'cloud_firestore'
+  pod 'firebase_storage'
+
 end
