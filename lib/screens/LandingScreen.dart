@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intelligent_plant_esp32/custom/BorderBoxButton.dart';
 import 'package:intelligent_plant_esp32/custom/Cards/AddPlantCard.dart';
 import 'package:intelligent_plant_esp32/custom/Cards/UpdatedPlantsCard.dart';
@@ -46,10 +47,20 @@ class _LandingScreenState extends State<LandingScreen> with SingleTickerProvider
   }
 
   @override
+  void dispose() {
+    // Dispose the controller when not needed
+    _plantsScrollController.dispose();
+    super.dispose();
+  }
+
+  bool _showFab = true;
+
+  @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
+    final Size screenSize = MediaQuery.of(context).size;
     const double padding = 25;
     final ThemeData themeData = Theme.of(context);
+    const duration = Duration(milliseconds: 300);
 
     return Scaffold(
       body: Stack(
@@ -90,31 +101,75 @@ class _LandingScreenState extends State<LandingScreen> with SingleTickerProvider
                           } else if (snapshot.hasData) {
                             Plants = snapshot.data!;
 
-                            return ListView.builder(
-                              controller: _plantsScrollController,
-                              itemCount: Plants.length + 1,
-                              physics: BouncingScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return index == Plants.length
-                                ? Column(
-                                    children: [
-                                      addVerticalSpace(padding / 2),
-                                      AddPlantCard(onTab: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => AddPlantScreen(updatePage: () {
-                                          setState(() {});
-                                        })));
-                                      }),
-                                      addVerticalSpace(padding)
-                                    ],
-                                )
-                                : Column(
-                                  children: [
-                                    addVerticalSpace(padding / 2),
-                                    UpdatedPlantsCard(plant: Plants[index]),
-                                    addVerticalSpace(padding)
-                                  ],
-                                );
-                              },
+                            return Stack(
+                              children: [
+                                NotificationListener<ScrollNotification>(
+                                  child: ListView.builder(
+                                    controller: _plantsScrollController,
+                                    itemCount: Plants.length + 1,
+                                    physics: BouncingScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      return index == Plants.length
+                                      ? Column(
+                                          children: [
+                                            addVerticalSpace(padding / 2),
+                                            AddPlantCard(onTab: () {
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => AddPlantScreen(updatePage: () {
+                                                setState(() {});
+                                              })));
+                                            }),
+                                            addVerticalSpace(padding)
+                                          ],
+                                      )
+                                      : Column(
+                                        children: [
+                                          addVerticalSpace(padding / 2),
+                                          UpdatedPlantsCard(plant: Plants[index]),
+                                          addVerticalSpace(padding)
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                  onNotification: (notification) {
+                                    if (notification is UserScrollNotification) {
+                                      final UserScrollNotification userScroll = notification;
+                                      switch (userScroll.direction) {
+                                        case ScrollDirection.forward:
+                                          setState(() {
+                                            _showFab = true;
+                                          });
+                                          break;
+                                        case ScrollDirection.reverse:
+                                          setState(() {
+                                            _showFab = false;
+                                          });
+                                          break;
+                                      }
+                                    }
+                                    return true;
+                                  },
+                                ),
+                                Positioned(
+                                  right: screenSize.width / 56,
+                                  bottom: screenSize.height / 9,
+                                  child: AnimatedSlide(
+                                    duration: duration,
+                                    offset: _showFab ? Offset.zero : const Offset(0, 2),
+                                    child: AnimatedOpacity(
+                                      duration: duration,
+                                      opacity: _showFab ? 1 : 0,
+                                      child: FloatingActionButton(
+                                        child: const Icon(Icons.add),
+                                        onPressed: () {
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => AddPlantScreen(updatePage: () {
+                                            setState(() {});
+                                          })));
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             );
                           } else {
                             return Text(snapshot.data.toString());
@@ -133,7 +188,7 @@ class _LandingScreenState extends State<LandingScreen> with SingleTickerProvider
           Positioned(
             bottom: 0,
             child: Container(
-              width: size.width,
+              width: screenSize.width,
               height: 90,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -146,7 +201,7 @@ class _LandingScreenState extends State<LandingScreen> with SingleTickerProvider
           ),
           Positioned(
             bottom: 10,
-            width: size.width,
+            width: screenSize.width,
             child: TabBar(
               indicatorSize: TabBarIndicatorSize.label,
               indicatorColor: COLOR_DARK_BLUE,

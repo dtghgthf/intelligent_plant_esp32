@@ -81,6 +81,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       )),
                       addVerticalSpace(15),
                       CardButton(
+                        width: screenSize.width,
                         child: Text("Change your Species", style: themeData.textTheme.headlineMedium),
                         onTap: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => ChangeSpeciesScreen()));

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intelligent_plant_esp32/utils/auth.dart';
 
 import '../custom/BorderBoxButton.dart';
 import '../custom/CustomTextField.dart';
@@ -15,7 +16,17 @@ class ChangeSpeciesScreen extends StatefulWidget {
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
+TextEditingController _addSpeciesTextFieldController = TextEditingController();
+
 class _ChangeSpeciesScreenState extends State<ChangeSpeciesScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    _addSpeciesTextFieldController.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -29,7 +40,7 @@ class _ChangeSpeciesScreenState extends State<ChangeSpeciesScreen> {
             child: Column(
               children: [
                 addVerticalSpace(15),
-                Text("Add Plant", style: themeData.textTheme.displayLarge),
+                Text("Change Species", style: themeData.textTheme.displayLarge),
                 addVerticalSpace(50),
                 Expanded(
                   child: FutureBuilder(
@@ -60,9 +71,12 @@ class _ChangeSpeciesScreenState extends State<ChangeSpeciesScreen> {
                                             ),
                                             TextButton(
                                               child: Text("OKAY"),
-                                              onPressed: () {
+                                              onPressed: () async {
                                                 Navigator.pop(context); //TODO: add delete Species
-                                                deleteSpecies(snapshot.data![index]);
+
+                                                await deleteSpecies(snapshot.data![index]);
+
+                                                setState(() {});
                                               },
                                             ),
                                           ],
@@ -97,6 +111,69 @@ class _ChangeSpeciesScreenState extends State<ChangeSpeciesScreen> {
             ),
           ),
           Positioned(
+            right: screenSize.width / 56,
+            bottom: screenSize.height / 56,
+            child: FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return SimpleDialog(
+                        title: Text("Add Species"),
+                        children: [
+                          Column(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                                child: TextField(
+                                  controller: _addSpeciesTextFieldController,
+                                  maxLength: 20,
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(right: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text("Cancel"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        List<String> species =  await getSpecies();
+
+                                        if (_addSpeciesTextFieldController.text != "") {
+                                          if (!species.contains(_addSpeciesTextFieldController.text)) {
+                                            addSpecies(_addSpeciesTextFieldController.text);
+                                          } else {
+                                            showErrorSnackbar(context, "The Species ${_addSpeciesTextFieldController.text} already exists!");
+                                          }
+                                        } else {
+                                          showErrorSnackbar(context, "Please set a Name");
+                                        }
+
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text("Continue"),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      );
+                    },
+                );
+              },
+            ),
+          ),
+          Positioned(
             top: 15,
             left: 15,
             child: BorderBoxButton(
@@ -128,11 +205,23 @@ Future<List<String>> getSpecies() async {
 }
 
 Future addSpecies(String name) async {
+  DocumentReference userDoc = FirebaseFirestore.instance.doc('Users/${_auth.currentUser!.uid}');
+  List<String> species = await getSpecies();
 
+  species.add(name);
+
+  await userDoc.update({
+    "plantSpecies": species
+  });
 }
 
 Future deleteSpecies(String name) async {
+  DocumentReference userDoc = FirebaseFirestore.instance.doc('Users/${_auth.currentUser!.uid}');
   List<String> species = await getSpecies();
 
+  species.remove(name);
 
+  await userDoc.update({
+    "plantSpecies": species
+  });
 }

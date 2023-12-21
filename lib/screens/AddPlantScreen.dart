@@ -81,26 +81,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                                   value: species,
                                   child: Text(species, style: themeData.textTheme.bodyLarge),
                                 );
-                              }).toList() + [ //TODO: Add these functions in Species Dropdown
-                                DropdownMenuItem(
-                                  child: Text("ADD PLANT", style: themeData.textTheme.bodyLarge),
-                                  onTap: () {
-
-                                  },
-                                ),
-                                DropdownMenuItem(
-                                  child: Text("DELETE LAST", style: TEXT_THEME_DEFAULT_RED.bodyLarge),
-                                  onTap: () {
-
-                                  },
-                                ),
-                                DropdownMenuItem(
-                                  child: Text("DELETE ALL", style: TEXT_THEME_DEFAULT_RED.bodyLarge),
-                                  onTap: () {
-
-                                  },
-                                ),
-                              ],
+                              }).toList()
                             );
                           } else if (snapshot.connectionState == ConnectionState.waiting) {
                             return Center(child: CircularProgressIndicator());

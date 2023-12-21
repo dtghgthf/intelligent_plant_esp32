@@ -28,6 +28,7 @@ class _SettingsCardState extends State<SettingsCard> {
     return UpdatedDataCard(
         width: widget.width ?? screenSize.width - (screenSize.width / 2),
         height: widget.height ?? 60,
+        padding: EdgeInsets.zero,
         child: widget.child
     );
   }
