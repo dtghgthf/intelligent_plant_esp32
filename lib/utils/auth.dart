@@ -133,6 +133,6 @@ class AuthService {
 
 void showErrorSnackbar(BuildContext context, Object e) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text(e.toString().split("] ")[1]),
+    content: Text(e is String ? e : e.toString().split("] ")[1]),
   ));
 }

@@ -21,13 +21,6 @@ TextEditingController _addSpeciesTextFieldController = TextEditingController();
 class _ChangeSpeciesScreenState extends State<ChangeSpeciesScreen> {
 
   @override
-  void initState() {
-    super.initState();
-
-    _addSpeciesTextFieldController.clear();
-  }
-
-  @override
   Widget build(BuildContext context) {
 
     final ThemeData themeData = Theme.of(context);
@@ -47,56 +40,66 @@ class _ChangeSpeciesScreenState extends State<ChangeSpeciesScreen> {
                     future: getSpecies(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
-                        return ListView.builder(
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                ListTile(
-                                  title: Text(snapshot.data![index], style: themeData.textTheme.headlineMedium),
-                                  trailing: IconButton(
-                                    icon: Icon(Icons.delete), color: Colors.red,
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                          title: Text("DELETE?"),
-                                          content: Text("You can't undo this action!"),
-                                          actions: [
-                                            TextButton(
-                                              child: Text("CANCEL"),
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                            TextButton(
-                                              child: Text("OKAY"),
-                                              onPressed: () async {
-                                                Navigator.pop(context); //TODO: add delete Species
+                        if (snapshot.data!.isEmpty) {
+                          return Column(
+                            children: [
+                              Icon(Icons.question_mark),
+                              addVerticalSpace(15),
+                              Text("Hm. No species here..", style: themeData.textTheme.labelLarge,),
+                            ],
+                          );
+                        } else {
+                          return ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    title: Text(snapshot.data![index], style: themeData.textTheme.headlineMedium),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.delete), color: Colors.red,
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              title: Text("DELETE?"),
+                                              content: Text("You can't undo this action!"),
+                                              actions: [
+                                                TextButton(
+                                                  child: Text("CANCEL"),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text("OKAY"),
+                                                  onPressed: () async {
+                                                    Navigator.pop(context); //TODO: add delete Species
 
-                                                await deleteSpecies(snapshot.data![index]);
+                                                    await deleteSpecies(snapshot.data![index]);
 
-                                                setState(() {});
-                                              },
-                                            ),
-                                          ],
-                                        )
-                                      );
-                                    },
+                                                    setState(() {});
+                                                  },
+                                                ),
+                                              ],
+                                            )
+                                        );
+                                      },
+                                    ),
                                   ),
-                                ),
-                                index != snapshot.data!.length - 1 ?
-                                Divider(
-                                  color: Colors.grey,
-                                  thickness: 2,
-                                  indent: 15,
-                                  endIndent: 15,
-                                ) :
-                                Container()
-                              ],
-                            );
-                          },
-                        );
+                                  index != snapshot.data!.length - 1 ?
+                                  Divider(
+                                    color: Colors.grey,
+                                    thickness: 2,
+                                    indent: 15,
+                                    endIndent: 15,
+                                  ) :
+                                  Container()
+                                ],
+                              );
+                            },
+                          );
+                        }
                       } else if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(child: CircularProgressIndicator());
                       } else if (snapshot.hasError) {
@@ -119,6 +122,7 @@ class _ChangeSpeciesScreenState extends State<ChangeSpeciesScreen> {
                 showDialog(
                     context: context,
                     builder: (context) {
+                      _addSpeciesTextFieldController.clear();
                       return SimpleDialog(
                         title: Text("Add Species"),
                         children: [
